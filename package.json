@@ -1,0 +1,26 @@
+{
+  "name": "upload-to-netlify-action",
+  "version": "1.0.0",
+  "description": "Upload generated files and artifacts to Netlify from Github actions.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrFlynn/upload-to-netlify-action.git"
+  },
+  "author": "Nick Pleatsikas <nick@pleatsikas.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MrFlynn/upload-to-netlify-action/issues"
+  },
+  "homepage": "https://github.com/MrFlynn/upload-to-netlify-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "netlify": "^4.0.0"
+  },
+  "devDependencies": {
+    "prettier": "2.0.2"
+  }
+}

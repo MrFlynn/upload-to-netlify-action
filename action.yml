@@ -1,0 +1,22 @@
+name: Upload to Netlify
+description: Upload generated files and artifacts to Netlify from a Gitub workflow.
+author: Nick Pleatsikas
+inputs:
+  source-file:
+    description: File in the repository to upload.
+    required: true
+  destination-path:
+    description: Target path on the Netlify site to upload the file.
+    required: true
+  site-name:
+    description: Name of the site to upload the file to.
+    required: true
+  netlify-token:
+    description: Token used for API access to your Netlify account.
+    required: true
+runs:
+  using: "node12"
+  main: "index.js"
+branding:
+  color: blue
+  icon: upload-cloud
