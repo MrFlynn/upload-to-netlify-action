@@ -3,79 +3,92 @@ const crypto = require("crypto");
 const fs = require("fs");
 const netlify = require("netlify");
 
-async function getSiteIDFromName(client) {
+// Get token and create new Netlify instance.
+core.getInput("netlify-token");
+core.setSecret(token);
+
+const client = new netlify(token);
+
+const getSiteIDFromName = async () => {
   const name = core.getInput("site-name");
   const site = await client.listSites({ name });
 
-  return site["site_id"];
-}
+  return site[0]["site_id"];
+};
 
-async function pollDeploy(client, siteID) {
-  const deploys = await client.listSiteDeploys({ site_id: siteID });
-  const deployID = deploys[0]["id"];
+const pollDeploy = async (site_id) => {
+  const deploys = await client.listSiteDeploys({ site_id });
+  const deploy_id = deploys[0]["id"];
 
   while (true) {
-    site = await client.getSiteDeploy({ site_id: siteID, deploy_id: deployID });
-    if (site["locked"] === true || site["id"] === null) {
-      return deployID;
+    deploy = await client.getSiteDeploy({ site_id, deploy_id });
+
+    if (deploy["state"] === "error") {
+      throw "Existing build failed. Terminating upload...";
+    } else if (deploy["state"] === "ready") {
+      break;
     }
 
     await new Promise((r) => setTimeout(r, 5000));
   }
-}
+};
 
-try {
-  // Get token. Ensure it's masked from any logs.
-  const token = core.getInput("netlify-token");
-  core.setSecret(token);
+const getHash = (path) =>
+  new Promise((resolve) => {
+    const hash = crypto.createHash("sha1");
+    fs.createReadStream(path)
+      .on("data", (chunk) => {
+        hash.update(chunk);
+      })
+      .on("end", () => {
+        resolve(hash.digest("hex"));
+      });
+  });
 
-  const client = new netlify(token);
+const cleanDestinationPath = (path) => {
+  if ((chars = path.match(/[#?]/g)) !== null) {
+    throw `Destination path contains illegal characters: ${chars.join(", ")}`;
+  }
 
-  // Get the site ID from the name given to the action. Wait for deploy to finish.
-  const siteID = await getSiteIDFromName(client);
-  const deployID = await pollDeploy(client, siteID);
+  if (path.startsWith("/")) {
+    return path.slice(1);
+  } else {
+    return path;
+  }
+};
 
-  // Read file contents and generate SHA1 hash.
-  const sourceFile = core.getInput("source-file");
-  var stream = fs.createReadStream(sourceFile);
+(async () => {
+  try {
+    const source_file = core.getInput("source-file");
+    core.info(`Uploading file ${source_file} to Netlify...`);
 
-  var shasum = crypto.createHash("sha1");
-  var digest = undefined;
-  var size = 0;
+    // Get the site ID from the name given to the action. Wait for current deploy to finish.
+    const site_id = await getSiteIDFromName();
+    await pollDeploy(site_id);
 
-  // Read filestream and hash all chunks.
-  stream
-    .on("data", (chunk) => {
-      shasum.update(chunk);
-      size += chunk.size;
-    })
-    .on("end", (_) => {
-      digest = shasum.digest("base64");
+    // Get hash of file.
+    const digest = await getHash(source_file);
+
+    // Update the deploy with new file information.
+    const destination = cleanDestinationPath(core.getInput("destination-path"));
+    const deploy = await client.createSiteDeploy({
+      site_id,
+      body: {
+        files: {
+          [destination]: digest,
+        },
+      },
     });
 
-  // Update the deploy with new file information.
-  const destination = core.getInput("destination-path");
-  await client.updateSiteDeploy({
-    site_id: siteID,
-    deploy_id: deployID,
-    body: {
-      files: {
-        destination: digest,
-      },
-    },
-  });
+    // Upload file.
+    await client.uploadDeployFile({
+      deploy_id: deploy["id"],
+      path: destination,
+      body: fs.createReadStream(source_file),
+    });
 
-  core.info(`Uploading file ${sourceFile} (${size} bytes)...`);
-
-  // Upload file.
-  await client.uploadDeployFile({
-    site_id: siteID,
-    deploy_id: deployID,
-    size,
-    body: fs.createReadStream(sourceFile),
-  });
-
-  core.info("File successfully uploaded to Netlify!");
-} catch (e) {
-  core.setFailed(error.message);
-}
+    core.info("File successfully uploaded to Netlify!");
+  } catch (e) {
+    core.setFailed(e.message);
+  }
+})();
