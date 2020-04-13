@@ -4,7 +4,7 @@ const fs = require("fs");
 const netlify = require("netlify");
 
 // Get token and create new Netlify instance.
-core.getInput("netlify-token");
+token = core.getInput("netlify-token");
 core.setSecret(token);
 
 const client = new netlify(token);
