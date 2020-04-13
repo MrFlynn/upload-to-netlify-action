@@ -1,5 +1,7 @@
 # upload-to-netlify-action
 
+![Tests](https://github.com/MrFlynn/upload-to-netlify-action/workflows/Tests/badge.svg)
+
 Upload secondary files and artifacts to a Netlify site. For example, you can
 compile a LaTeX document to a PDF using Github actions and upload it to your
 Netlify site using this action.
