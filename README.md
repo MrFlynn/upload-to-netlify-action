@@ -1,22 +1,24 @@
 # upload-to-netlify-action
 
 Upload secondary files and artifacts to a Netlify site. For example, you can
-compile a LaTeX document to a PDF using Github actions and upload it to your 
+compile a LaTeX document to a PDF using Github actions and upload it to your
 Netlify site using this action.
 
 ## Inputs
+
 All inputs are required to use this action.
 
-* `source-file`: Location of the file you wish to upload.
-* `destination-path`: Absolute path on the Netlify site that you wish to upload
-    the file to.
-* `site-name`: Name of the website you wish to upload the file to.
-* `netlify-token`: Netlify personal access token. Use
-    [this link](https://docs.netlify.com/accounts-and-billing/user-settings/#connect-with-other-applications)
-    to get your own token.
+- `source-file`: Location of the file you wish to upload.
+- `destination-path`: Absolute path on the Netlify site that you wish to upload
+  the file to.
+- `site-name`: Name of the website you wish to upload the file to.
+- `netlify-token`: Netlify personal access token. Use
+  [this link](https://docs.netlify.com/accounts-and-billing/user-settings/#connect-with-other-applications)
+  to get your own token.
 
 ## Example Usage
-This example shows how to use the action to upload a PDF to a Netlify site 
+
+This example shows how to use the action to upload a PDF to a Netlify site
 called `example-site`.
 
 ```yaml
@@ -31,5 +33,5 @@ steps:
       netlify-token: ${{ secrets.NETLIFY_TOKEN }}
 ```
 
-_Recommendation_: Store your Netlify token as a 
+_Recommendation_: Store your Netlify token as a
 [secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets).
