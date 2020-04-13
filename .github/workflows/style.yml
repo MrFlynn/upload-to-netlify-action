@@ -12,4 +12,4 @@ jobs:
         with:
           node-version: "12.x"
       - run: npm install
-      - run: prettier --check .
+      - run: PATH="$(npm bin):$PATH" prettier --check .
