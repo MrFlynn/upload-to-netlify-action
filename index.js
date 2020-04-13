@@ -57,6 +57,18 @@ const cleanDestinationPath = (path) => {
   }
 };
 
+const getFileList = async (path, digest, site_id) => {
+  const files = await client.listSiteFiles({ site_id });
+  
+  var file_digests = {};
+  files.forEach((e) => {
+    file_digests[e['id']] = e['sha'];
+  });
+  file_digests[path] = digest;
+
+  return file_digests;
+};
+
 (async () => {
   try {
     const source_file = core.getInput("source-file");
@@ -69,14 +81,14 @@ const cleanDestinationPath = (path) => {
     // Get hash of file.
     const digest = await getHash(source_file);
 
-    // Update the deploy with new file information.
+    // Get desination file path and list of files.
     const destination = cleanDestinationPath(core.getInput("destination-path"));
+    const files = await getFileList("/" + destination, digest, site_id);
+
     const deploy = await client.createSiteDeploy({
       site_id,
       body: {
-        files: {
-          [destination]: digest,
-        },
+        files,
       },
     });
 
