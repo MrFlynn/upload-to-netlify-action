@@ -35,10 +35,15 @@ describe("Utilities tests", function () {
     ];
 
     it("should return file hash", function () {
-      return fsify(structure).then((struct) => new Promise(async (resolve) => {
-        const hash = await utils.getHash(struct[0].name);
-        resolve(assert.equal(hash, "1f09d30c707d53f3d16c530dd73d70a6ce7596a9"));
-      }));
+      return fsify(structure).then(
+        (struct) =>
+          new Promise(async (resolve) => {
+            const hash = await utils.getHash(struct[0].name);
+            resolve(
+              assert.equal(hash, "1f09d30c707d53f3d16c530dd73d70a6ce7596a9")
+            );
+          })
+      );
     });
   });
 });
