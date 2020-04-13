@@ -4,7 +4,7 @@
   "description": "Upload generated files and artifacts to Netlify from Github actions.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,10 @@
     "netlify": "^4.0.4"
   },
   "devDependencies": {
-    "prettier": "2.0.2"
+    "chai": "^4.2.0",
+    "fsify": "^4.0.0",
+    "mocha": "^7.1.1",
+    "prettier": "2.0.2",
+    "sinon": "^9.0.2"
   }
 }
