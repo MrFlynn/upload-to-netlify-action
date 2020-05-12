@@ -82,9 +82,7 @@ getFileList = async (path, digest, site_id) => {
     const digest = await getHash(source_file);
 
     // Get desination file path and list of files.
-    const destination = cleanDestinationPath(
-      core.getInput("destination-path")
-    );
+    const destination = cleanDestinationPath(core.getInput("destination-path"));
     const files = await getFileList("/" + destination, digest, site_id);
 
     const deploy = await client.createSiteDeploy({
@@ -108,9 +106,9 @@ getFileList = async (path, digest, site_id) => {
 })();
 
 module.exports = {
-    getSiteIDFromName,
-    pollDeploy,
-    getHash,
-    cleanDestinationPath,
-    getFileList
+  getSiteIDFromName,
+  pollDeploy,
+  getHash,
+  cleanDestinationPath,
+  getFileList,
 };
