@@ -3,23 +3,20 @@ const crypto = require("crypto");
 const fs = require("fs");
 const netlify = require("netlify");
 
-// Function exports.
-let utils = {};
-
 // Get token and create new Netlify instance.
 token = core.getInput("netlify-token");
 core.setSecret(token);
 
 const client = new netlify(token);
 
-utils.getSiteIDFromName = async () => {
+getSiteIDFromName = async () => {
   const name = core.getInput("site-name");
   const site = await client.listSites({ name });
 
   return site[0]["site_id"];
 };
 
-utils.pollDeploy = async (site_id) => {
+pollDeploy = async (site_id) => {
   const deploys = await client.listSiteDeploys({ site_id });
   const deploy_id = deploys[0]["id"];
 
@@ -36,7 +33,7 @@ utils.pollDeploy = async (site_id) => {
   }
 };
 
-utils.getHash = (path) =>
+getHash = (path) =>
   new Promise((resolve) => {
     const hash = crypto.createHash("sha1");
     fs.createReadStream(path)
@@ -48,7 +45,7 @@ utils.getHash = (path) =>
       });
   });
 
-utils.cleanDestinationPath = (path) => {
+cleanDestinationPath = (path) => {
   if ((chars = path.match(/[#?]/g)) !== null) {
     throw `Destination path contains illegal characters: ${chars.join(", ")}`;
   }
@@ -60,7 +57,7 @@ utils.cleanDestinationPath = (path) => {
   }
 };
 
-utils.getFileList = async (path, digest, site_id) => {
+getFileList = async (path, digest, site_id) => {
   const files = await client.listSiteFiles({ site_id });
 
   var file_digests = {};
@@ -78,17 +75,17 @@ utils.getFileList = async (path, digest, site_id) => {
     core.info(`Uploading file ${source_file} to Netlify...`);
 
     // Get the site ID from the name given to the action. Wait for current deploy to finish.
-    const site_id = await utils.getSiteIDFromName();
-    await utils.pollDeploy(site_id);
+    const site_id = await getSiteIDFromName();
+    await pollDeploy(site_id);
 
     // Get hash of file.
-    const digest = await utils.getHash(source_file);
+    const digest = await getHash(source_file);
 
     // Get desination file path and list of files.
-    const destination = uitls.cleanDestinationPath(
+    const destination = cleanDestinationPath(
       core.getInput("destination-path")
     );
-    const files = await utils.getFileList("/" + destination, digest, site_id);
+    const files = await getFileList("/" + destination, digest, site_id);
 
     const deploy = await client.createSiteDeploy({
       site_id,
@@ -110,4 +107,10 @@ utils.getFileList = async (path, digest, site_id) => {
   }
 })();
 
-module.exports = utils;
+module.exports = {
+    getSiteIDFromName,
+    pollDeploy,
+    getHash,
+    cleanDestinationPath,
+    getFileList
+};
