@@ -35,5 +35,8 @@ steps:
       netlify-token: ${{ secrets.NETLIFY_TOKEN }}
 ```
 
+Full example usage of this action can be found in 
+[MrFlynn/upload-to-netlify-example](https://github.com/MrFlynn/upload-to-netlify-example).
+
 _Recommendation_: Store your Netlify token as a
 [secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets).
