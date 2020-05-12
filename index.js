@@ -9,14 +9,14 @@ core.setSecret(token);
 
 const client = new netlify(token);
 
-getSiteIDFromName = async () => {
+getSiteIDFromName = async (client) => {
   const name = core.getInput("site-name");
   const site = await client.listSites({ name });
 
   return site[0]["site_id"];
 };
 
-pollDeploy = async (site_id) => {
+pollDeploy = async (client, site_id) => {
   const deploys = await client.listSiteDeploys({ site_id });
   const deploy_id = deploys[0]["id"];
 
@@ -24,7 +24,7 @@ pollDeploy = async (site_id) => {
     deploy = await client.getSiteDeploy({ site_id, deploy_id });
 
     if (deploy["state"] === "error") {
-      throw "Existing build failed. Terminating upload...";
+      throw Error("Existing build failed. Terminating upload...");
     } else if (deploy["state"] === "ready") {
       break;
     }
@@ -57,7 +57,7 @@ cleanDestinationPath = (path) => {
   }
 };
 
-getFileList = async (path, digest, site_id) => {
+getFileList = async (client, path, digest, site_id) => {
   const files = await client.listSiteFiles({ site_id });
 
   var file_digests = {};
@@ -75,15 +75,15 @@ getFileList = async (path, digest, site_id) => {
     core.info(`Uploading file ${source_file} to Netlify...`);
 
     // Get the site ID from the name given to the action. Wait for current deploy to finish.
-    const site_id = await getSiteIDFromName();
-    await pollDeploy(site_id);
+    const site_id = await getSiteIDFromName(client);
+    await pollDeploy(client, site_id);
 
     // Get hash of file.
     const digest = await getHash(source_file);
 
     // Get desination file path and list of files.
     const destination = cleanDestinationPath(core.getInput("destination-path"));
-    const files = await getFileList("/" + destination, digest, site_id);
+    const files = await getFileList(client, "/" + destination, digest, site_id);
 
     const deploy = await client.createSiteDeploy({
       site_id,
