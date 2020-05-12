@@ -27,7 +27,7 @@ called `example-site`.
 steps:
   - uses: actions/checkout@v2
   # Other steps here...
-  - uses: MrFlynn/upload-to-netlify-action@v1
+  - uses: MrFlynn/upload-to-netlify-action@v2
     with:
       source-file: "src-path/to/file.pdf"
       destination-path: "/destination-path/to/file.pdf"
