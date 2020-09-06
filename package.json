@@ -4,7 +4,8 @@
   "description": "Upload generated files and artifacts to Netlify from Github actions.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "ncc build index.js -o dist"
   },
   "repository": {
     "type": "git",
