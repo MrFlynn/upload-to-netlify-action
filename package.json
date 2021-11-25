@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "build": "ncc build index.js -o dist"
+    "build": "rm -rf build/ && ncc build index.js -o dist"
   },
   "repository": {
     "type": "git",
