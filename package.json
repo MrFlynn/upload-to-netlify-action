@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/MrFlynn/upload-to-netlify-action#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.9.1",
     "netlify": "^9.0.0"
   },
   "devDependencies": {
