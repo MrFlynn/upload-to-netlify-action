@@ -1,0 +1,51 @@
+project_name: upload-to-netlify-action
+before:
+  hooks:
+    - go mod download
+builds:
+  - id: "default"
+    env:
+      - CGO_ENABLED=0
+    binary: netlify-uploader
+    ldflags:
+      - -s -w -X main.version={{ .Version }} -X main.commit={{ .ShortCommit }} -X main.date={{ .Date }}
+    goos:
+      - linux
+    goarch:
+      - amd64
+archives:
+  - format: binary
+dockers:
+  - ids:
+      - default
+    image_templates:
+      - "ghcr.io/mrflynn/{{ .ProjectName }}:latest-amd64"
+      - "ghcr.io/mrflynn/{{ .ProjectName }}:{{ .Version }}-amd64"
+    use: buildx
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.licenses=MIT"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source=https://github.com/mrflynn/upload-to-netlify-action"
+      - "--platform=linux/amd64"
+docker_manifests:
+  - name_template: "ghcr.io/mrflynn/{{ .ProjectName }}:{{ .Version }}"
+    image_templates:
+      - "ghcr.io/mrflynn/{{ .ProjectName }}:{{ .Version }}-amd64"
+  - name_template: "ghcr.io/mrflynn/{{ .ProjectName }}:latest"
+    image_templates:
+      - "ghcr.io/mrflynn/{{ .ProjectName }}:latest-amd64"
+checksum:
+  name_template: SHASUMS.txt
+snapshot:
+  name_template: "{{ .ShortCommit }}-rc"
+changelog:
+  filters:
+    exclude:
+      - "^conf:"
+      - "^test:"
+      - "^docs:"

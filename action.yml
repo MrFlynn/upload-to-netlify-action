@@ -15,8 +15,8 @@ inputs:
     description: Token used for API access to your Netlify account.
     required: true
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: docker
+  image: "ghcr.io/mrflynn/upload-to-netlify-action:v3.0.0"
 branding:
   color: blue
   icon: upload-cloud
