@@ -110,7 +110,7 @@ func NewDeployWithExistingFiles(id, branch string, assets []*models.File) (param
 }
 
 // RegisterFile adds a file path name and its hash to the file list.
-func (d *DeployWithFilesParams) RegisterFile(path string, content io.ReadSeekCloser) (err error) {
+func (d *DeployWithFilesParams) RegisterFile(path string, content io.ReadSeeker) (err error) {
 	hash := sha1.New()
 
 	_, err = io.Copy(hash, content)
@@ -168,9 +168,9 @@ func (h Handler) UploadFilesToDeploy(ctx context.Context, deployFiles ...DeployF
 		result, e := porcelain.Default.Operations.UploadDeployFile(params, client.BearerToken(h.Token))
 		if e != nil {
 			errors.Join(err, e)
+		} else {
+			files = append(files, result.GetPayload())
 		}
-
-		files = append(files, result.GetPayload())
 	}
 
 	return
