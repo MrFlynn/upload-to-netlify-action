@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/go-openapi/runtime v0.19.24
+	github.com/google/go-cmp v0.5.9
 	github.com/netlify/open-api/v2 v2.16.0
 )
 
