@@ -125,7 +125,7 @@ func (d *DeployWithFilesParams) RegisterFile(path string, content io.ReadSeeker)
 }
 
 // CreateDeployWithFiles creates a new site deployment.
-func (h Handler) CreateDeployWithFiles(ctx context.Context, deployParams DeployWithFilesParams) (deploy *models.Deploy, err error) {
+func (h Handler) CreateDeployWithFiles(ctx context.Context, deployParams *DeployWithFilesParams) (deploy *models.Deploy, err error) {
 	params := &operations.CreateSiteDeployParams{
 		Context: h.createContext(ctx),
 		SiteID:  deployParams.ID,
