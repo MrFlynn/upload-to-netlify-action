@@ -136,7 +136,7 @@ func main() {
 		printError(err)
 	}
 
-	logger.Debug(fmt.Sprintf("Got the following existing files for site ID %s: %+v", site.ID, files))
+	logger.Debug(fmt.Sprintf("Got %d preexisting files from site ID %s", len(files), site.ID))
 
 	var (
 		sourceFileReaders = getReadersForSourceFiles()
@@ -173,10 +173,12 @@ func main() {
 	}
 
 	// Upload additional files and wait for deploy to finish.
-	_, err = handler.UploadFilesToDeploy(ctx, uploadParams...)
+	files, err = handler.UploadFilesToDeploy(ctx, uploadParams...)
 	if err != nil {
 		printError(err)
 	}
+
+	logger.Debug(fmt.Sprintf("Uploaded %d files to deploy with ID %s", len(files), deploy.ID))
 
 	err = handler.WaitForDeploy(ctx, deploy)
 	if err != nil {
