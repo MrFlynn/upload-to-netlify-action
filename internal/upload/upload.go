@@ -3,6 +3,7 @@ package upload
 import (
 	"context"
 	"crypto/sha1"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -118,7 +119,7 @@ func (d *DeployWithFilesParams) RegisterFile(path string, content io.ReadSeeker)
 		return
 	}
 
-	d.Files[path] = string(hash.Sum(nil))
+	d.Files[path] = hex.EncodeToString(hash.Sum(nil))
 
 	content.Seek(0, 0)
 	return
