@@ -144,7 +144,7 @@ func main() {
 	)
 
 	for path, reader := range sourceFileReaders {
-		err = deployParams.RegisterFile(path, reader)
+		err = deployParams.RegisterFile("/"+path, reader)
 		if err != nil {
 			printError(err)
 		}
@@ -162,7 +162,7 @@ func main() {
 
 	logger.Debug(fmt.Sprintf("Started new deploy with ID %s", deploy.ID))
 
-	uploadParams := make([]upload.DeployFileUploadParams, len(destinationPaths))
+	uploadParams := make([]upload.DeployFileUploadParams, 0, len(destinationPaths))
 
 	for path, reader := range sourceFileReaders {
 		uploadParams = append(uploadParams, upload.DeployFileUploadParams{
