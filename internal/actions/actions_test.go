@@ -22,6 +22,16 @@ func Test_NewLogger(t *testing.T) {
 
 const content = "lorem ipsum"
 
+func TestLogger_Debuig(t *testing.T) {
+	logger := &Logger{Output: &strings.Builder{}}
+	logger.Debug(content)
+
+	diff := cmp.Diff("::debug::"+content+"\n", logger.Output.(*strings.Builder).String())
+	if diff != "" {
+		t.Errorf("Output mismatch (-want +got):\n%s", diff)
+	}
+}
+
 func TestLogger_Info(t *testing.T) {
 	logger := &Logger{Output: &strings.Builder{}}
 	logger.Info(content)

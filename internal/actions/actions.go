@@ -18,6 +18,11 @@ func NewLogger() *Logger {
 	return &Logger{Output: os.Stdout}
 }
 
+// Debug prints a message at the debug level.
+func (l *Logger) Debug(message string) {
+	fmt.Fprintf(l.Output, "::debug::%s\n", message)
+}
+
 // Info prints a message at the info level.
 func (l *Logger) Info(message string) {
 	fmt.Fprintln(l.Output, message)
