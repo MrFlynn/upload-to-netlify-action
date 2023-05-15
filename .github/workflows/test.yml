@@ -68,6 +68,9 @@ jobs:
         with:
           working_directory: testdata
           root_file: asset.tex
+      - name: Overwrite image target
+        run: |
+          sed -i '/image:/c\  image: Dockerfile' action.yml
       - name: Run locally built action
         uses: ./
         with:
