@@ -38,7 +38,8 @@ jobs:
       - name: Generate test data
         run: |
           mkdir -p testdata
-          GIT_SHA="$(git rev-parse --short HEAD)" cat << EOF | envsubst > testdata/asset.tex
+          export GIT_SHA="$(git rev-parse --short HEAD)"
+          cat << EOF > testdata/asset.tex
           \documentclass{article}
           \usepackage{hyperref}
           \usepackage[utf8]{inputenc}
