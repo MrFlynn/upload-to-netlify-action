@@ -22,12 +22,14 @@ var logger = actions.NewLogger()
 
 // Program variables.
 var (
-	netlifyToken string
-	siteName     string
+	siteName string
 
 	sourceFiles      []string
 	destinationPaths []string
 )
+
+// Netlify handler
+var handler upload.Handler
 
 func init() {
 	logger.Debug(fmt.Sprintf(
@@ -36,7 +38,9 @@ func init() {
 	))
 
 	var (
-		err  error
+		netlifyToken string
+		err          error
+
 		opts = actions.GetInputOptions{
 			Required:       true,
 			TrimWhitespace: true,
@@ -68,6 +72,8 @@ func init() {
 		logger.Error("At least one destination path must be given.")
 		os.Exit(1)
 	}
+
+	handler = upload.Handler{Token: netlifyToken}
 }
 
 func printError(err error) {
@@ -106,8 +112,6 @@ const branchName = "master" // TODO: determine best way to get this value.
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
-
-	handler := upload.Handler{Token: netlifyToken}
 
 	// Get site information.
 	site, err := handler.GetSite(ctx, siteName)
