@@ -32,10 +32,10 @@ var (
 var handler upload.Handler
 
 func init() {
-	logger.Debug(fmt.Sprintf(
+	logger.Debugf(
 		"upload-to-netlify-action %s (commit: %s, compiled: %s)",
 		version, commit, date,
-	))
+	)
 
 	var (
 		netlifyToken string
@@ -81,7 +81,7 @@ func handleError(ctx context.Context, err error, deployID *string) {
 
 	if deployID != nil {
 		if destroyErr := handler.DestroyDeploy(ctx, *deployID); destroyErr != nil {
-			logger.Error(fmt.Sprintf("Error while trying to destroy deploy: %s", destroyErr.Error()))
+			logger.Errorf("Error while trying to destroy deploy: %s", destroyErr)
 		}
 	}
 
@@ -135,7 +135,7 @@ func main() {
 		handleError(ctx, err, nil)
 	}
 
-	logger.Debug(fmt.Sprintf("Got site ID for %s (ID: %s)", siteName, site.ID))
+	logger.Debugf("Got site ID for %s (ID: %s)", siteName, site.ID)
 
 	// Get latest deploy and wait until it has completed.
 	deploy, err := handler.GetLatestDeploy(ctx, site.ID, branchName)
@@ -143,7 +143,7 @@ func main() {
 		handleError(ctx, err, nil)
 	}
 
-	logger.Debug(fmt.Sprintf("Got latest deploy for site ID %s (deployID: %s)", site.ID, deploy.ID))
+	logger.Debugf("Got latest deploy for site ID %s (deployID: %s)", site.ID, deploy.ID)
 
 	err = handler.WaitForDeploy(ctx, deploy)
 	if err != nil {
@@ -156,7 +156,7 @@ func main() {
 		handleError(ctx, err, nil)
 	}
 
-	logger.Debug(fmt.Sprintf("Got %d preexisting files from site ID %s", len(files), site.ID))
+	logger.Debugf("Got %d preexisting files from site ID %s", len(files), site.ID)
 
 	sourceFileReaders, err := getReadersForSourceFiles()
 	if err != nil {
@@ -170,10 +170,12 @@ func main() {
 			handleError(ctx, err, nil)
 		}
 
-		logger.Debug(fmt.Sprintf("Registered file %s", path))
+		logger.Debugf("Registered file %s", path)
 	}
 
-	logger.Info("Beginning upload of the following files: " + strings.Join(sourceFiles, ", ") + ".")
+	logger.Infof(
+		"Beginning upload of the following files: %s.", strings.Join(sourceFiles, ", "),
+	)
 
 	// Create new deploy with additional files.
 	deploy, err = handler.CreateDeployWithFiles(ctx, deployParams)
@@ -181,7 +183,7 @@ func main() {
 		handleError(ctx, err, &deploy.ID)
 	}
 
-	logger.Debug(fmt.Sprintf("Started new deploy with ID %s", deploy.ID))
+	logger.Debugf("Started new deploy with ID %s", deploy.ID)
 
 	uploadParams := make([]upload.DeployFileUploadParams, 0, len(destinationPaths))
 	for path, reader := range sourceFileReaders {
@@ -198,7 +200,7 @@ func main() {
 		handleError(ctx, err, &deploy.ID)
 	}
 
-	logger.Debug(fmt.Sprintf("Uploaded %d files to deploy with ID %s", len(files), deploy.ID))
+	logger.Debugf("Uploaded %d files to deploy with ID %s", len(files), deploy.ID)
 
 	err = handler.WaitForDeploy(ctx, deploy)
 	if err != nil {
