@@ -3,6 +3,7 @@ package actions
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -20,13 +21,31 @@ func Test_NewLogger(t *testing.T) {
 	}
 }
 
-const content = "lorem ipsum"
+const (
+	content = "lorem ipsum"
+	number  = 10
+	format  = "%s %d"
+)
 
-func TestLogger_Debuig(t *testing.T) {
+func TestLogger_Debug(t *testing.T) {
 	logger := &Logger{Output: &strings.Builder{}}
 	logger.Debug(content)
 
 	diff := cmp.Diff("::debug::"+content+"\n", logger.Output.(*strings.Builder).String())
+	if diff != "" {
+		t.Errorf("Output mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestLogger_Debugf(t *testing.T) {
+	logger := &Logger{Output: &strings.Builder{}}
+	logger.Debugf(format, content, number)
+
+	diff := cmp.Diff(
+		"::debug::"+content+" "+strconv.Itoa(number)+"\n",
+		logger.Output.(*strings.Builder).String(),
+	)
+
 	if diff != "" {
 		t.Errorf("Output mismatch (-want +got):\n%s", diff)
 	}
@@ -42,6 +61,20 @@ func TestLogger_Info(t *testing.T) {
 	}
 }
 
+func TestLogger_Infof(t *testing.T) {
+	logger := &Logger{Output: &strings.Builder{}}
+	logger.Infof(format, content, number)
+
+	diff := cmp.Diff(
+		content+" "+strconv.Itoa(number)+"\n",
+		logger.Output.(*strings.Builder).String(),
+	)
+
+	if diff != "" {
+		t.Errorf("Output mismatch (-want +got):\n%s", diff)
+	}
+}
+
 func TestLogger_Warn(t *testing.T) {
 	logger := &Logger{Output: &strings.Builder{}}
 	logger.Warn(content)
@@ -52,11 +85,39 @@ func TestLogger_Warn(t *testing.T) {
 	}
 }
 
+func TestLogger_Warnf(t *testing.T) {
+	logger := &Logger{Output: &strings.Builder{}}
+	logger.Warnf(format, content, number)
+
+	diff := cmp.Diff(
+		"::warning::"+content+" "+strconv.Itoa(number)+"\n",
+		logger.Output.(*strings.Builder).String(),
+	)
+
+	if diff != "" {
+		t.Errorf("Output mismatch (-want +got):\n%s", diff)
+	}
+}
+
 func TestLogger_Error(t *testing.T) {
 	logger := &Logger{Output: &strings.Builder{}}
 	logger.Error(content)
 
 	diff := cmp.Diff("::error::"+content+"\n", logger.Output.(*strings.Builder).String())
+	if diff != "" {
+		t.Errorf("Output mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestLogger_Errorf(t *testing.T) {
+	logger := &Logger{Output: &strings.Builder{}}
+	logger.Errorf(format, content, number)
+
+	diff := cmp.Diff(
+		"::error::"+content+" "+strconv.Itoa(number)+"\n",
+		logger.Output.(*strings.Builder).String(),
+	)
+
 	if diff != "" {
 		t.Errorf("Output mismatch (-want +got):\n%s", diff)
 	}

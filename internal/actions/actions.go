@@ -18,29 +18,49 @@ func NewLogger() *Logger {
 	return &Logger{Output: os.Stdout}
 }
 
-// Debug prints a message at the debug level.
+// Debug writes out a debug log message.
 func (l *Logger) Debug(message string) {
-	fmt.Fprintf(l.Output, "::debug::%s\n", message)
+	fmt.Fprintln(l.Output, "::debug::"+message)
 }
 
-// Info prints a message at the info level.
+// Debugf writes out a formatted debug log message.
+func (l *Logger) Debugf(format string, values ...any) {
+	fmt.Fprintf(l.Output, "::debug::"+format+"\n", values...)
+}
+
+// Info writes out an info log message.
 func (l *Logger) Info(message string) {
 	fmt.Fprintln(l.Output, message)
 }
 
-// Warn prints a message at the warning level.
-func (l *Logger) Warn(message string) {
-	fmt.Fprintf(l.Output, "::warning::%s\n", message)
+// Infof writes out a formatted info log message.
+func (l *Logger) Infof(format string, values ...any) {
+	fmt.Fprintf(l.Output, format+"\n", values...)
 }
 
-// Error prints a message at the error level.
+// Warn writes out a warning log message.
+func (l *Logger) Warn(message string) {
+	fmt.Fprintln(l.Output, "::warning::"+message)
+}
+
+// Warnf writes out a formatted warning log message.
+func (l *Logger) Warnf(format string, values ...any) {
+	fmt.Fprintf(l.Output, "::warning::"+format+"\n", values...)
+}
+
+// Error writes out an error log message.
 func (l *Logger) Error(message string) {
-	fmt.Fprintf(l.Output, "::error::%s\n", message)
+	fmt.Fprintln(l.Output, "::error::"+message)
+}
+
+// Errorf writes out a formatted error log message.
+func (l *Logger) Errorf(format string, values ...any) {
+	fmt.Fprintf(l.Output, "::error::"+format+"\n", values...)
 }
 
 // SetSecret tells the actions environment to mask the supplied value.
 func (l *Logger) SetSecret(value string) {
-	fmt.Fprintf(l.Output, "::add-mask::%s\n", value)
+	fmt.Fprintln(l.Output, "::add-mask::"+value)
 }
 
 // GetInputOptions defines some options about how the input should be retrieved.
