@@ -81,27 +81,36 @@ func printError(err error) {
 	os.Exit(1)
 }
 
-func cleanDestinationPath(path string) (cleaned string) {
+func cleanDestinationPath(path string) (cleaned string, err error) {
 	if regexp.MustCompile("[#?]").MatchString(path) {
-		printError(
-			fmt.Errorf("path %s contains one of the following illegal characters: #, ?", path),
-		)
+		err = fmt.Errorf("path %s contains one of the following illegal characters: #, ?", path)
+		return
 	}
 
 	cleaned = strings.TrimPrefix(path, "/")
 	return
 }
 
-func getReadersForSourceFiles() (rs map[string]io.ReadSeekCloser) {
+func getReadersForSourceFiles() (rs map[string]io.ReadSeekCloser, err error) {
 	rs = make(map[string]io.ReadSeekCloser, len(destinationPaths))
 
+	var (
+		file *os.File
+		dest string
+	)
+
 	for i, sourceFile := range sourceFiles {
-		file, err := os.Open(sourceFile)
+		file, err = os.Open(sourceFile)
 		if err != nil {
-			printError(err)
+			return
 		}
 
-		rs[cleanDestinationPath(destinationPaths[i])] = file
+		dest, err = cleanDestinationPath(destinationPaths[i])
+		if err != nil {
+			return
+		}
+
+		rs[dest] = file
 	}
 
 	return
