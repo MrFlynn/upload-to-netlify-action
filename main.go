@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/mrflynn/go-joinederror"
 	"github.com/mrflynn/upload-to-netlify-action/internal/actions"
 	"github.com/mrflynn/upload-to-netlify-action/internal/upload"
 )
@@ -77,7 +79,12 @@ func init() {
 }
 
 func handleError(ctx context.Context, err error, deployID *string) {
-	logger.Error(err.Error())
+	// Log error, but capitalize the first letter.
+	logger.Error(
+		regexp.MustCompile(`^\w`).ReplaceAllStringFunc(err.Error(), func(s string) string {
+			return strings.ToUpper(s)
+		}),
+	)
 
 	if deployID != nil {
 		if destroyErr := handler.DestroyDeploy(ctx, *deployID); destroyErr != nil {
@@ -109,11 +116,13 @@ func getReadersForSourceFiles() (rs map[string]io.ReadSeekCloser, err error) {
 	for i, sourceFile := range sourceFiles {
 		file, err = os.Open(sourceFile)
 		if err != nil {
+			err = fmt.Errorf("error opening source file %s: %w", sourceFile, err)
 			return
 		}
 
 		dest, err = cleanDestinationPath(destinationPaths[i])
 		if err != nil {
+			err = fmt.Errorf("error in destination path %s: %w", destinationPaths[i], err)
 			return
 		}
 
@@ -132,7 +141,7 @@ func main() {
 	// Get site information.
 	site, err := handler.GetSite(ctx, siteName)
 	if err != nil {
-		handleError(ctx, err, nil)
+		handleError(ctx, fmt.Errorf("error getting details for site %s: %w", siteName, err), nil)
 	}
 
 	logger.Debugf("Got site ID for %s (ID: %s)", siteName, site.ID)
@@ -140,20 +149,20 @@ func main() {
 	// Get latest deploy and wait until it has completed.
 	deploy, err := handler.GetLatestDeploy(ctx, site.ID, branchName)
 	if err != nil {
-		handleError(ctx, err, nil)
+		handleError(ctx, fmt.Errorf("error getting latest deploy: %w", err), nil)
 	}
 
 	logger.Debugf("Got latest deploy for site ID %s (deployID: %s)", site.ID, deploy.ID)
 
 	err = handler.WaitForDeploy(ctx, deploy)
 	if err != nil {
-		handleError(ctx, err, nil)
+		handleError(ctx, fmt.Errorf("encountered error waiting for deploy to complete: %w", err), nil)
 	}
 
 	// Get site files.
 	files, err := handler.GetSiteFiles(ctx, site.ID)
 	if err != nil {
-		handleError(ctx, err, nil)
+		handleError(ctx, fmt.Errorf("error getting files for site: %w", err), nil)
 	}
 
 	logger.Debugf("Got %d preexisting files from site ID %s", len(files), site.ID)
@@ -167,7 +176,7 @@ func main() {
 	for path, reader := range sourceFileReaders {
 		err = deployParams.RegisterFile("/"+path, reader)
 		if err != nil {
-			handleError(ctx, err, nil)
+			handleError(ctx, fmt.Errorf("error preparing file %s for upload: %w", path, err), nil)
 		}
 
 		logger.Debugf("Registered file %s", path)
@@ -180,7 +189,7 @@ func main() {
 	// Create new deploy with additional files.
 	deploy, err = handler.CreateDeployWithFiles(ctx, deployParams)
 	if err != nil {
-		handleError(ctx, err, &deploy.ID)
+		handleError(ctx, fmt.Errorf("error while initiating new deployment: %w", err), &deploy.ID)
 	}
 
 	logger.Debugf("Started new deploy with ID %s", deploy.ID)
@@ -197,14 +206,20 @@ func main() {
 	// Upload additional files and wait for deploy to finish.
 	files, err = handler.UploadFilesToDeploy(ctx, uploadParams...)
 	if err != nil {
-		handleError(ctx, err, &deploy.ID)
+		for _, fileError := range joinederror.UnwrapAll(err) {
+			logger.Error(fileError.Error())
+		}
+
+		handleError(ctx, errors.New("could not upload files due to the above errors"), &deploy.ID)
 	}
 
 	logger.Debugf("Uploaded %d files to deploy with ID %s", len(files), deploy.ID)
 
 	err = handler.WaitForDeploy(ctx, deploy)
 	if err != nil {
-		handleError(ctx, err, &deploy.ID)
+		handleError(
+			ctx, fmt.Errorf("encountered error waiting for deploy to complete: %w", err), &deploy.ID,
+		)
 	}
 
 	logger.Info("Files successfully uploaded to Netlify!")

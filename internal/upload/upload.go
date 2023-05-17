@@ -168,7 +168,7 @@ func (h Handler) UploadFilesToDeploy(ctx context.Context, deployFiles ...DeployF
 
 		result, e := porcelain.Default.Operations.UploadDeployFile(params, client.BearerToken(h.Token))
 		if e != nil {
-			err = errors.Join(err, e)
+			err = errors.Join(err, fmt.Errorf("error uploading file to %s: %w", deployFile.Path, e))
 		} else {
 			files = append(files, result.GetPayload())
 		}

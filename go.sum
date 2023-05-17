@@ -318,6 +318,8 @@ github.com/mitchellh/mapstructure v1.4.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RR
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJuTMNUDYhXwkmfOly8iTdp5TEcJFWZD2D7SIkUc=
+github.com/mrflynn/go-joinederror v0.2.0 h1:6yrdguGoTbFEtCLFlVgh42f1RoK9wtnPK38kn0hpNE0=
+github.com/mrflynn/go-joinederror v0.2.0/go.mod h1:b2m0d3QROZ50epTGwv4tBEFLINsP5+gZNWx1jG4pq5A=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/netlify/open-api/v2 v2.16.0 h1:FcZPPdfB1nEs6XyOxTHPuzSLfSn2tsVbDEEDy/T7iUQ=
 github.com/netlify/open-api/v2 v2.16.0/go.mod h1:g4zTkS20wcAzQCJuBfaIw4pUeTPpaKTDMIT/9yiNoNs=
