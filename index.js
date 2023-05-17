@@ -71,6 +71,8 @@ getFileList = async (client, path, digest, site_id) => {
 
 (async () => {
   try {
+    core.warn("v2 action is deprecated, please update to v3");
+
     const source_file = core.getInput("source-file");
     core.info(`Uploading file ${source_file} to Netlify...`);
 
