@@ -187,6 +187,10 @@ func (h Handler) WaitForDeploy(ctx context.Context, deploy *models.Deploy) (err 
 
 // DestroyDeploy cancels and then deletes the deploy with the given ID.
 func (h Handler) DestroyDeploy(ctx context.Context, id string) (err error) {
+	if id == "" {
+		return
+	}
+
 	ctx = h.createContext(ctx)
 
 	_, err = porcelain.Default.Operations.CancelSiteDeploy(
