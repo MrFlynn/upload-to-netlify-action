@@ -37,7 +37,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rsc/goversion v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
-	go.mongodb.org/mongo-driver v1.4.4 // indirect
+	go.mongodb.org/mongo-driver v1.5.1 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
