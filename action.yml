@@ -20,7 +20,7 @@ inputs:
     required: true
 runs:
   using: docker
-  image: "ghcr.io/mrflynn/upload-to-netlify-action:3.0.0"
+  image: "docker://ghcr.io/mrflynn/upload-to-netlify-action:3.0.0"
 branding:
   color: blue
   icon: upload-cloud
