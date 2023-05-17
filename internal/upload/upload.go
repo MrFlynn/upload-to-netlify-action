@@ -90,6 +90,7 @@ func (h Handler) GetLatestDeploy(ctx context.Context, id, branch string) (deploy
 // DeployWithFilesParams contains all of the necessary parameters to initiate a new deployment.
 type DeployWithFilesParams struct {
 	ID     string
+	Title  string
 	Branch string
 	Files  map[string]string
 }
@@ -130,6 +131,7 @@ func (h Handler) CreateDeployWithFiles(ctx context.Context, deployParams *Deploy
 	params := &operations.CreateSiteDeployParams{
 		Context: h.createContext(ctx),
 		SiteID:  deployParams.ID,
+		Title:   &deployParams.Title,
 		Deploy: &models.DeployFiles{
 			Branch: deployParams.Branch,
 			Files:  deployParams.Files,

@@ -139,6 +139,16 @@ func getReadersForSourceFiles() (rs map[string]io.ReadSeekCloser, err error) {
 	return
 }
 
+func createDeployTitle() (title string) {
+	gitSha := os.Getenv("GITHUB_SHA")
+	if len(gitSha) >= 7 {
+		gitSha = gitSha[:7]
+	}
+
+	title = fmt.Sprintf("%s@%s via upload-to-netlify-action", branchName, gitSha)
+	return
+}
+
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
@@ -186,6 +196,8 @@ func main() {
 
 		logger.Debugf("Registered file %s", path)
 	}
+
+	deployParams.Title = createDeployTitle()
 
 	logger.Infof(
 		"Beginning upload of the following files: %s.", strings.Join(sourceFiles, ", "),
