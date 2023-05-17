@@ -1,15 +1,82 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  workflow_dispatch: ~
+  push:
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
+      - .github/workflows/test.yml
 
 jobs:
   test:
-    name: Run unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          node-version: "12.x"
-      - run: npm install
-      - run: npm test
+          go-version: "1.20"
+      - name: Run unit tests
+        run: |
+          go test -v -race $(go list ./...)
+  run-devel-action:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.20"
+      - uses: goreleaser/goreleaser-action@v3
+        with:
+          version: latest
+          args: build --clean --snapshot
+      - name: Copy binary
+        run: |
+          cp "$(jq -r '. | first | .path' ./dist/artifacts.json)" .
+      - name: Generate test data
+        run: |
+          mkdir -p testdata
+          export GIT_SHA="$(git rev-parse --short HEAD)"
+          cat << EOF > testdata/asset.tex
+          \documentclass{article}
+          \usepackage{hyperref}
+          \usepackage[utf8]{inputenc}
+
+          \hypersetup{
+              colorlinks=true,
+              linkcolor=blue,
+              filecolor=magenta,
+              urlcolor=blue,
+          }
+
+          \title{Example Document}
+          \date{\today}
+
+          \begin{document}
+          \maketitle
+
+          Hello internet, this is a sample document that was uploaded with the
+
+          \underline{\href{https://githuh.com/MrFlynn/upload-to-netlfy-action}{upload-to-netlify-action}}. 
+
+          Git SHA: $GIT_SHA.
+
+          \end{document}
+          EOF
+      - uses: xu-cheng/latex-action@v2
+        with:
+          working_directory: testdata
+          root_file: asset.tex
+      - name: Overwrite image target
+        run: |
+          sed -i '/image:/c\  image: Dockerfile' action.yml
+      - name: Run locally built action
+        uses: ./
+        with:
+          site-name: upload-to-netlify-example
+          source-file: testdata/asset.pdf
+          destination-path: "/asset.pdf"
+          branch-name: master
+          netlify-token: ${{ secrets.NETLIFY_TOKEN }}
