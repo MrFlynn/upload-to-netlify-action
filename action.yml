@@ -11,6 +11,10 @@ inputs:
   site-name:
     description: Name of the site to upload the file to.
     required: true
+  branch-name:
+    description: Name of deploy branch.
+    required: false
+    default: main
   netlify-token:
     description: Token used for API access to your Netlify account.
     required: true

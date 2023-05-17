@@ -24,7 +24,8 @@ var logger = actions.NewLogger()
 
 // Program variables.
 var (
-	siteName string
+	siteName   string
+	branchName string
 
 	sourceFiles      []string
 	destinationPaths []string
@@ -61,6 +62,12 @@ func init() {
 	if err != nil {
 		logger.Error("Name of Netlify site is required!")
 		os.Exit(1)
+	}
+
+	branchName, err = actions.GetInput("branch-name", opts)
+	if err != nil {
+		branchName = "main"
+		logger.Warn("Could not get value of branch-name, assuming 'main'")
 	}
 
 	sourceFiles, err = actions.GetMultilineInput("source-file", opts)
@@ -131,8 +138,6 @@ func getReadersForSourceFiles() (rs map[string]io.ReadSeekCloser, err error) {
 
 	return
 }
-
-const branchName = "master" // TODO: determine best way to get this value.
 
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

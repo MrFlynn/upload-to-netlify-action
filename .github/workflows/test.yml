@@ -78,4 +78,5 @@ jobs:
           site-name: upload-to-netlify-example
           source-file: testdata/asset.pdf
           destination-path: "/asset.pdf"
+          branch-name: master
           netlify-token: ${{ secrets.NETLIFY_TOKEN }}

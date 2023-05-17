@@ -14,6 +14,9 @@ All inputs are required to use this action.
 - `destination-path`: Absolute path on the Netlify site that you wish to upload
   the file to.
 - `site-name`: Name of the website you wish to upload the file to.
+- `branch-name`: Name of the deploy branch. Defaults to "main". I recommend
+  setting this value to `${{ github.head_ref || github.ref_name }}` to get the
+  name of the branch dynamically.
 - `netlify-token`: Netlify personal access token. Use
   [this link](https://docs.netlify.com/accounts-and-billing/user-settings/#connect-with-other-applications)
   to get your own token.
