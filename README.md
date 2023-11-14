@@ -23,14 +23,14 @@ All inputs are required to use this action.
 - If you are using the action to upload multiple files at once, you need to put
   one file per line in the `source-file` input. For example:
   ```yaml
-  source-file: |
+  source-file: |-
     path/to/first.txt
     path/to/second.txt
   ```
   When you then specify the destination paths, you must have a path for each
   file in the `source-file` input. For example:
   ```yaml
-  destination-path: |
+  destination-path: |-
     /absolute/path/to/first.txt
     /other/path/to/second.txt
   ```
