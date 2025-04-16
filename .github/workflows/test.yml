@@ -34,7 +34,7 @@ jobs:
           args: build --clean --snapshot
       - name: Copy binary
         run: |
-          cp "$(jq -r '. | first | .path' ./dist/artifacts.json)" .
+          cp "$(jq -r '[ .[] | select(.type == "Binary").path ] | first' ./dist/artifacts.json)" .
       - name: Generate test data
         run: |
           mkdir -p testdata
