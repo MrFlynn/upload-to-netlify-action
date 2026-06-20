@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/go-openapi/runtime v0.19.24
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/mrflynn/go-joinederror v0.2.0
 	github.com/netlify/open-api/v2 v2.16.0
 )
@@ -29,7 +29,6 @@ require (
 	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/go-openapi/swag v0.19.12 // indirect
 	github.com/go-openapi/validate v0.20.0 // indirect
-	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
@@ -38,10 +37,10 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rsc/goversion v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
-	go.mongodb.org/mongo-driver v1.5.1 // indirect
+	go.mongodb.org/mongo-driver v1.17.7 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
